@@ -1,15 +1,10 @@
-# Large datasets
-data/base_yolo/
-data/fire_accessibility_source/
-data/fire_accessibility_augmented/
-data/fire_accessibility_augmented_old/
-data/manual_composite/
-data/additional_real/raw/
+# Local datasets and generated data
+data/
 
 # Training outputs
 runs/
 
-# Model weights
+# Model weights / exports
 *.pt
 *.onnx
 
@@ -25,7 +20,3 @@ venv/
 # IDE
 .vscode/
 .idea/
-data/coco/
-data/raw/mendeley_fire_extinguisher/
-data/base_diverse/
-data/

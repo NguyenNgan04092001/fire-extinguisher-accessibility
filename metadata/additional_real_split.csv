@@ -1,0 +1,15 @@
+file_name,split,has_obstacle,note
+real_0001.jpg,train,no,cabinet/reference case
+real_0002.jpg,val,no,cabinet/reference case
+real_0003.jpg,train,no,cabinet/reference case
+real_0004.jpg,val,no,accessible control
+real_0005.jpg,train,no,hard/reference case
+real_0006.jpg,train,no,nearby structure/reference case
+real_0007.jpg,train,yes,door/access obstruction
+real_0008.jpg,val,yes,chair obstruction
+real_0010.jpg,train,no,cabinet/reference case
+real_0011.jpg,val,yes,clutter/access obstruction
+real_0012.jpg,test,no,accessible control
+real_0013.jpg,test,no,cabinet/reference case
+real_0014.jpg,test,yes,equipment obstruction
+real_0015.jpg,test,yes,upper/extraction-space obstruction

@@ -4,11 +4,13 @@
 
 ### Câu hỏi nghiên cứu chính
 
-**Việc phân tích đồng thời mức độ che khuất của bình chữa cháy và mức độ cản trở của vùng tiếp cận có giúp nâng cao độ chính xác trong đánh giá khả năng tiếp cận so với các phương pháp chỉ dựa trên phát hiện hoặc mức độ che khuất của bình chữa cháy hay không?**
+**Việc phân tích đồng thời mức độ che khuất của bình chữa cháy và mức độ cản trở vùng tiếp cận chức năng có giúp nâng cao độ chính xác trong đánh giá khả năng tiếp cận so với các phương pháp chỉ dựa trên phát hiện hoặc mức độ che khuất của bình chữa cháy hay không?**
+
+Trong nghiên cứu này, vùng tiếp cận chức năng không chỉ là vùng phía trước bình mà còn có thể bao gồm không gian cần thiết để đưa tay tới tay cầm, thao tác, nhấc và rút bình ra khỏi vị trí đặt.
 
 ### Giả thuyết nghiên cứu
 
-**Việc bổ sung thông tin về mức độ cản trở vùng tiếp cận sẽ giúp giảm các trường hợp đánh giá sai khi bình chữa cháy vẫn nhìn thấy rõ nhưng trên thực tế bị vật thể chắn phía trước.**
+**Việc bổ sung thông tin về mức độ cản trở vùng tiếp cận chức năng sẽ giúp giảm các trường hợp đánh giá sai khi bình chữa cháy vẫn nhìn thấy rõ nhưng trên thực tế khó tiếp cận hoặc khó lấy ra do vật thể / cấu trúc xung quanh.**
 
 ### Các phương pháp so sánh
 
@@ -50,12 +52,26 @@ Phát hiện bình chữa cháy + vật cản
     ↓
 Tính mức độ che khuất q
     ↓
-Tạo vùng tiếp cận
+Xác định vùng tiếp cận chức năng
     ↓
 Tính mức độ cản trở r
     ↓
 Đánh giá khả năng tiếp cận
 ```
+
+### Định nghĩa làm việc của `r`
+
+`r` biểu diễn mức độ vùng cần thiết cho thao tác lấy bình bị chiếm dụng hoặc hạn chế.
+
+Tùy theo cấu hình ảnh, vùng này có thể bao gồm:
+
+- khu vực phía trước bình;
+- không gian bên hông / góc thao tác;
+- vùng quanh tay cầm;
+- khoảng trống phía trên hoặc theo hướng rút bình;
+- phần không gian bị cabinet / holder giới hạn nếu cấu trúc đó thực sự cản thao tác.
+
+Một vật thể nằm gần bình nhưng không ảnh hưởng đến các vùng chức năng trên không được tự động xem là obstacle.
 
 ### Các thành phần có trong MVP
 
@@ -63,7 +79,7 @@ Tính mức độ cản trở r
 - Segmentation bình chữa cháy.
 - Segmentation vật cản.
 - Tính mức độ che khuất `q`.
-- Xác định vùng tiếp cận.
+- Xác định vùng tiếp cận chức năng.
 - Tính mức độ cản trở `r`.
 - Phân loại khả năng tiếp cận.
 - So sánh các phương pháp A/B/C/D.
@@ -93,7 +109,7 @@ Các nội dung sau **không thuộc phạm vi triển khai chính** và chỉ �
 
 Nghiên cứu tập trung vào việc đánh giá khả năng tiếp cận bình chữa cháy từ **một ảnh RGB duy nhất**, dựa trên hai tín hiệu chính:
 
-- `q` — mức độ che khuất của bình chữa cháy.
-- `r` — mức độ cản trở của vùng tiếp cận.
+- `q` — mức độ che khuất của bình chữa cháy;
+- `r` — mức độ cản trở của vùng tiếp cận chức năng cần cho thao tác lấy bình.
 
-Phương pháp đề xuất sẽ kiểm tra xem việc kết hợp hai tín hiệu này có giúp đánh giá khả năng tiếp cận tốt hơn so với các phương pháp chỉ sử dụng thông tin về bình chữa cháy hay không.
+Phương pháp đề xuất sẽ kiểm tra xem việc kết hợp hai tín hiệu này có giúp đánh giá khả năng tiếp cận tốt hơn so với các phương pháp chỉ sử dụng thông tin về mức độ nhìn thấy của bình chữa cháy hay không.
