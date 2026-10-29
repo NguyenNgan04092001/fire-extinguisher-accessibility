@@ -1,0 +1,14 @@
+data/images/train/real_0001.jpg
+data/images/train/real_0002.jpg
+data/images/train/real_0003.jpg
+data/images/train/real_0004.jpg
+data/images/train/real_0005.jpg
+data/images/train/real_0006.jpg
+data/images/train/real_0007.jpg
+data/images/train/real_0008.jpg
+data/images/train/real_0010.jpg
+data/images/train/real_0011.jpg
+data/images/train/real_0012.jpg
+data/images/train/real_0013.jpg
+data/images/train/real_0014.jpg
+data/images/train/real_0015.jpg

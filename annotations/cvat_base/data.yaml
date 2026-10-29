@@ -1,0 +1,4 @@
+names:
+  0: fire_extinguisher
+path: .
+train: train.txt

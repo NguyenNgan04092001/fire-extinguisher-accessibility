@@ -1,0 +1,31 @@
+# Large datasets
+data/base_yolo/
+data/fire_accessibility_source/
+data/fire_accessibility_augmented/
+data/fire_accessibility_augmented_old/
+data/manual_composite/
+data/additional_real/raw/
+
+# Training outputs
+runs/
+
+# Model weights
+*.pt
+*.onnx
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+data/coco/
+data/raw/mendeley_fire_extinguisher/
+data/base_diverse/
+data/

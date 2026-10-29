@@ -1,0 +1,121 @@
+﻿category,output_file,coco_image_id,coco_annotation_id,source_file,bbox_width,bbox_height,mask_area,mask_bbox_ratio
+chair,assets/obstacles/chair/chair_001.png,326757,106763,000000326757.jpg,119.71,171.98,7616.56,0.37
+chair,assets/obstacles/chair/chair_002.png,23163,101839,000000023163.jpg,630.86,398.54,231511.54,0.9208
+chair,assets/obstacles/chair/chair_003.png,530002,373483,000000530002.jpg,256.23,286.98,51581.57,0.7015
+chair,assets/obstacles/chair/chair_004.png,443347,376060,000000443347.jpg,90.2,241.97,10570.13,0.4843
+chair,assets/obstacles/chair/chair_005.png,308156,1596071,000000308156.jpg,112.33,112.91,8095.15,0.6383
+chair,assets/obstacles/chair/chair_006.png,456071,101255,000000456071.jpg,478.42,148.76,42492.24,0.5971
+chair,assets/obstacles/chair/chair_007.png,137674,374548,000000137674.jpg,110.67,117.9,9404.26,0.7207
+chair,assets/obstacles/chair/chair_008.png,258006,1931238,000000258006.jpg,217.76,310.86,40285.36,0.5951
+chair,assets/obstacles/chair/chair_009.png,140490,1937473,000000140490.jpg,227.4,127.98,27028.56,0.9287
+chair,assets/obstacles/chair/chair_010.png,109290,108307,000000109290.jpg,82.64,115.32,6520.97,0.6843
+chair,assets/obstacles/chair/chair_011.png,5508,290528,000000005508.jpg,91.69,115.42,8219.41,0.7767
+chair,assets/obstacles/chair/chair_012.png,333580,379748,000000333580.jpg,85.9,98.79,5359.03,0.6315
+chair,assets/obstacles/chair/chair_013.png,220688,1939224,000000220688.jpg,239.86,192.58,29335.46,0.6351
+chair,assets/obstacles/chair/chair_014.png,458463,1587679,000000458463.jpg,487.97,94.61,12888.87,0.2792
+chair,assets/obstacles/chair/chair_015.png,452229,381382,000000452229.jpg,186.67,202.95,10954.59,0.2892
+chair,assets/obstacles/chair/chair_016.png,270074,101305,000000270074.jpg,130.75,126.62,8209.86,0.4959
+chair,assets/obstacles/chair/chair_017.png,554920,373057,000000554920.jpg,207.73,142.33,13029.25,0.4407
+chair,assets/obstacles/chair/chair_018.png,350331,378545,000000350331.jpg,94.95,120.0,7297.48,0.6405
+chair,assets/obstacles/chair/chair_019.png,433373,106566,000000433373.jpg,123.99,315.23,14270.12,0.3651
+chair,assets/obstacles/chair/chair_020.png,425522,103271,000000425522.jpg,239.48,158.28,18040.02,0.4759
+chair,assets/obstacles/chair/chair_021.png,371132,1933565,000000371132.jpg,94.87,113.5,6610.45,0.6139
+chair,assets/obstacles/chair/chair_022.png,195352,382163,000000195352.jpg,80.55,123.42,7810.62,0.7857
+chair,assets/obstacles/chair/chair_023.png,172900,381247,000000172900.jpg,282.02,230.56,20357.64,0.3131
+chair,assets/obstacles/chair/chair_024.png,183372,106287,000000183372.jpg,98.28,211.03,9585.2,0.4622
+chair,assets/obstacles/chair/chair_025.png,62348,1588168,000000062348.jpg,207.75,176.97,25907.78,0.7047
+chair,assets/obstacles/chair/chair_026.png,342130,106196,000000342130.jpg,145.12,84.49,8038.38,0.6556
+chair,assets/obstacles/chair/chair_027.png,229035,1581496,000000229035.jpg,128.39,90.2,5720.08,0.4939
+chair,assets/obstacles/chair/chair_028.png,533888,2125364,000000533888.jpg,96.24,94.92,5515.96,0.6038
+chair,assets/obstacles/chair/chair_029.png,296735,100407,000000296735.jpg,102.16,91.09,6038.08,0.6489
+chair,assets/obstacles/chair/chair_030.png,423782,1930711,000000423782.jpg,129.76,104.1,7685.33,0.5689
+suitcase,assets/obstacles/suitcase/suitcase_001.png,87642,1185428,000000087642.jpg,632.23,416.79,189766.75,0.7202
+suitcase,assets/obstacles/suitcase/suitcase_002.png,381968,1187704,000000381968.jpg,423.31,353.09,117904.79,0.7888
+suitcase,assets/obstacles/suitcase/suitcase_003.png,447270,1187221,000000447270.jpg,385.44,126.56,44664.54,0.9156
+suitcase,assets/obstacles/suitcase/suitcase_004.png,278229,1184391,000000278229.jpg,638.92,463.82,281449.22,0.9497
+suitcase,assets/obstacles/suitcase/suitcase_005.png,425945,1183132,000000425945.jpg,425.56,391.19,84233.9,0.506
+suitcase,assets/obstacles/suitcase/suitcase_006.png,64915,1185707,000000064915.jpg,228.11,137.29,26043.46,0.8316
+suitcase,assets/obstacles/suitcase/suitcase_007.png,96535,1185397,000000096535.jpg,205.62,201.03,30127.01,0.7288
+suitcase,assets/obstacles/suitcase/suitcase_008.png,299207,1183232,000000299207.jpg,160.72,125.13,15522.03,0.7718
+suitcase,assets/obstacles/suitcase/suitcase_009.png,431997,1183009,000000431997.jpg,171.59,200.09,23581.71,0.6868
+suitcase,assets/obstacles/suitcase/suitcase_010.png,506592,1844135,000000506592.jpg,148.1,187.47,21948.62,0.7905
+suitcase,assets/obstacles/suitcase/suitcase_011.png,405648,1185238,000000405648.jpg,145.94,256.5,24930.63,0.666
+suitcase,assets/obstacles/suitcase/suitcase_012.png,550824,1183780,000000550824.jpg,165.23,120.91,12621.33,0.6318
+suitcase,assets/obstacles/suitcase/suitcase_013.png,45491,1843341,000000045491.jpg,266.5,189.73,41941.64,0.8295
+suitcase,assets/obstacles/suitcase/suitcase_014.png,148635,1185062,000000148635.jpg,130.78,112.76,11679.65,0.792
+suitcase,assets/obstacles/suitcase/suitcase_015.png,451206,1185915,000000451206.jpg,90.52,124.26,7682.57,0.683
+suitcase,assets/obstacles/suitcase/suitcase_016.png,274291,1183189,000000274291.jpg,294.48,318.2,61852.62,0.6601
+suitcase,assets/obstacles/suitcase/suitcase_017.png,191515,1842989,000000191515.jpg,106.23,190.41,15014.45,0.7423
+suitcase,assets/obstacles/suitcase/suitcase_018.png,324857,1186270,000000324857.jpg,429.43,282.18,54482.83,0.4496
+suitcase,assets/obstacles/suitcase/suitcase_019.png,271411,1186647,000000271411.jpg,85.3,181.59,11724.58,0.7569
+suitcase,assets/obstacles/suitcase/suitcase_020.png,414975,1446434,000000414975.jpg,204.23,333.66,60534.81,0.8883
+suitcase,assets/obstacles/suitcase/suitcase_021.png,140850,1187136,000000140850.jpg,104.37,130.97,11994.89,0.8775
+suitcase,assets/obstacles/suitcase/suitcase_022.png,238001,1841641,000000238001.jpg,110.28,157.2,15004.47,0.8655
+suitcase,assets/obstacles/suitcase/suitcase_023.png,348680,1183802,000000348680.jpg,112.13,89.17,5593.35,0.5594
+suitcase,assets/obstacles/suitcase/suitcase_024.png,429063,1184517,000000429063.jpg,99.33,152.7,10752.23,0.7089
+suitcase,assets/obstacles/suitcase/suitcase_025.png,206112,1187081,000000206112.jpg,80.5,126.84,8751.33,0.8571
+suitcase,assets/obstacles/suitcase/suitcase_026.png,160471,1183948,000000160471.jpg,237.57,193.73,32473.06,0.7056
+suitcase,assets/obstacles/suitcase/suitcase_027.png,183202,1186982,000000183202.jpg,525.3,346.25,97976.9,0.5387
+suitcase,assets/obstacles/suitcase/suitcase_028.png,312795,1183377,000000312795.jpg,311.24,210.11,60592.04,0.9266
+suitcase,assets/obstacles/suitcase/suitcase_029.png,37024,1186226,000000037024.jpg,304.05,210.0,54974.13,0.861
+suitcase,assets/obstacles/suitcase/suitcase_030.png,410966,1187723,000000410966.jpg,104.09,115.82,10287.07,0.8533
+bench,assets/obstacles/bench/bench_001.png,520310,575859,000000520310.jpg,313.89,136.99,24356.73,0.5664
+bench,assets/obstacles/bench/bench_002.png,211141,574647,000000211141.jpg,415.14,298.38,48128.25,0.3885
+bench,assets/obstacles/bench/bench_003.png,292435,1392028,000000292435.jpg,254.56,124.04,17124.23,0.5423
+bench,assets/obstacles/bench/bench_004.png,137964,1396437,000000137964.jpg,399.1,230.83,71795.08,0.7793
+bench,assets/obstacles/bench/bench_005.png,204994,1396858,000000204994.jpg,225.13,198.88,30743.34,0.6866
+bench,assets/obstacles/bench/bench_006.png,336101,1812703,000000336101.jpg,473.59,81.16,12084.8,0.3144
+bench,assets/obstacles/bench/bench_007.png,217082,571755,000000217082.jpg,309.71,269.68,46341.81,0.5548
+bench,assets/obstacles/bench/bench_008.png,393493,578955,000000393493.jpg,183.86,129.15,13910.05,0.5858
+bench,assets/obstacles/bench/bench_009.png,336511,577276,000000336511.jpg,261.83,308.66,21923.98,0.2713
+bench,assets/obstacles/bench/bench_010.png,305019,571693,000000305019.jpg,204.85,228.55,34824.1,0.7438
+bench,assets/obstacles/bench/bench_011.png,556491,573537,000000556491.jpg,548.94,331.09,102306.62,0.5629
+bench,assets/obstacles/bench/bench_012.png,254366,576799,000000254366.jpg,235.01,304.53,41904.63,0.5855
+bench,assets/obstacles/bench/bench_013.png,322226,1810960,000000322226.jpg,89.61,244.54,17101.22,0.7804
+bench,assets/obstacles/bench/bench_014.png,421341,575925,000000421341.jpg,107.29,177.48,10106.18,0.5307
+bench,assets/obstacles/bench/bench_015.png,580238,576314,000000580238.jpg,319.36,185.19,34837.53,0.589
+bench,assets/obstacles/bench/bench_016.png,385552,1390796,000000385552.jpg,587.87,201.71,59718.26,0.5036
+bench,assets/obstacles/bench/bench_017.png,72453,576361,000000072453.jpg,122.61,100.32,7401.87,0.6018
+bench,assets/obstacles/bench/bench_018.png,78447,1395224,000000078447.jpg,131.94,124.2,9228.72,0.5632
+bench,assets/obstacles/bench/bench_019.png,144391,1395137,000000144391.jpg,265.84,162.93,20428.44,0.4716
+bench,assets/obstacles/bench/bench_020.png,71796,575695,000000071796.jpg,155.33,241.61,23271.54,0.6201
+bench,assets/obstacles/bench/bench_021.png,2142,572249,000000002142.jpg,263.61,133.64,9307.57,0.2642
+bench,assets/obstacles/bench/bench_022.png,460461,1394207,000000460461.jpg,101.27,117.26,4151.98,0.3496
+bench,assets/obstacles/bench/bench_023.png,392033,572881,000000392033.jpg,292.24,242.77,38938.23,0.5488
+bench,assets/obstacles/bench/bench_024.png,580668,573859,000000580668.jpg,367.83,164.85,25986.56,0.4286
+bench,assets/obstacles/bench/bench_025.png,339687,2064301,000000339687.jpg,271.72,282.82,54640.92,0.711
+bench,assets/obstacles/bench/bench_026.png,167450,1813199,000000167450.jpg,634.6,135.9,82062.27,0.9515
+bench,assets/obstacles/bench/bench_027.png,90349,1393198,000000090349.jpg,640.0,351.64,78565.82,0.3491
+bench,assets/obstacles/bench/bench_028.png,423039,574564,000000423039.jpg,216.81,319.28,49144.07,0.7099
+bench,assets/obstacles/bench/bench_029.png,157377,577357,000000157377.jpg,176.26,174.71,15284.57,0.4963
+bench,assets/obstacles/bench/bench_030.png,44540,572811,000000044540.jpg,574.92,195.24,66575.59,0.5931
+potted plant,assets/obstacles/potted plant/potted plant_001.png,386650,21893,000000386650.jpg,293.01,470.98,82561.82,0.5983
+potted plant,assets/obstacles/potted plant/potted plant_002.png,223671,19436,000000223671.jpg,100.14,110.29,7563.2,0.6848
+potted plant,assets/obstacles/potted plant/potted plant_003.png,455956,2127858,000000455956.jpg,141.53,121.06,9177.63,0.5357
+potted plant,assets/obstacles/potted plant/potted plant_004.png,546674,292678,000000546674.jpg,144.29,360.18,18782.49,0.3614
+potted plant,assets/obstacles/potted plant/potted plant_005.png,214618,26155,000000214618.jpg,95.2,84.06,4696.43,0.5869
+potted plant,assets/obstacles/potted plant/potted plant_006.png,477700,291781,000000477700.jpg,115.54,187.37,15166.3,0.7006
+potted plant,assets/obstacles/potted plant/potted plant_007.png,292792,22633,000000292792.jpg,133.45,235.69,18951.54,0.6025
+potted plant,assets/obstacles/potted plant/potted plant_008.png,471202,313873,000000471202.jpg,101.77,109.0,6648.15,0.5993
+potted plant,assets/obstacles/potted plant/potted plant_009.png,471350,21854,000000471350.jpg,153.88,142.38,11417.58,0.5211
+potted plant,assets/obstacles/potted plant/potted plant_010.png,330493,21938,000000330493.jpg,159.25,108.49,13158.95,0.7616
+potted plant,assets/obstacles/potted plant/potted plant_011.png,246999,20472,000000246999.jpg,115.78,194.16,7997.39,0.3558
+potted plant,assets/obstacles/potted plant/potted plant_012.png,199458,20849,000000199458.jpg,149.42,256.54,19269.13,0.5027
+potted plant,assets/obstacles/potted plant/potted plant_013.png,334364,1607634,000000334364.jpg,84.26,142.42,8082.55,0.6735
+potted plant,assets/obstacles/potted plant/potted plant_014.png,260135,20872,000000260135.jpg,323.59,477.53,79467.91,0.5143
+potted plant,assets/obstacles/potted plant/potted plant_015.png,253686,24633,000000253686.jpg,89.22,175.65,7116.14,0.4541
+potted plant,assets/obstacles/potted plant/potted plant_016.png,281779,2128221,000000281779.jpg,88.52,110.65,7418.28,0.7574
+potted plant,assets/obstacles/potted plant/potted plant_017.png,93672,22931,000000093672.jpg,431.46,432.9,88451.33,0.4736
+potted plant,assets/obstacles/potted plant/potted plant_018.png,101084,20823,000000101084.jpg,92.1,119.69,4179.0,0.3791
+potted plant,assets/obstacles/potted plant/potted plant_019.png,429408,1605679,000000429408.jpg,96.24,168.61,9059.85,0.5583
+potted plant,assets/obstacles/potted plant/potted plant_020.png,253489,19005,000000253489.jpg,208.45,168.05,20390.34,0.5821
+potted plant,assets/obstacles/potted plant/potted plant_021.png,58841,22376,000000058841.jpg,197.85,211.33,21730.48,0.5197
+potted plant,assets/obstacles/potted plant/potted plant_022.png,367689,1609704,000000367689.jpg,127.71,86.1,7156.94,0.6509
+potted plant,assets/obstacles/potted plant/potted plant_023.png,189345,19628,000000189345.jpg,136.71,176.57,10684.2,0.4426
+potted plant,assets/obstacles/potted plant/potted plant_024.png,199575,23489,000000199575.jpg,94.39,108.8,5448.45,0.5305
+potted plant,assets/obstacles/potted plant/potted plant_025.png,489998,25673,000000489998.jpg,110.85,228.16,14764.6,0.5838
+potted plant,assets/obstacles/potted plant/potted plant_026.png,117112,22581,000000117112.jpg,185.24,343.31,27204.66,0.4278
+potted plant,assets/obstacles/potted plant/potted plant_027.png,289329,1955234,000000289329.jpg,110.14,94.47,5463.26,0.5251
+potted plant,assets/obstacles/potted plant/potted plant_028.png,161051,20705,000000161051.jpg,100.63,185.71,8265.26,0.4423
+potted plant,assets/obstacles/potted plant/potted plant_029.png,312524,27287,000000312524.jpg,170.53,352.07,24746.96,0.4122
+potted plant,assets/obstacles/potted plant/potted plant_030.png,226555,21259,000000226555.jpg,120.97,110.35,7305.11,0.5472

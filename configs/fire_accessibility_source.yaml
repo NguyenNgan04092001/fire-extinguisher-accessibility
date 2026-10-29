@@ -1,0 +1,8 @@
+path: data/fire_accessibility_source
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: fire_extinguisher
+  1: obstacle
