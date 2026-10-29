@@ -1,501 +1,278 @@
 # Hướng dẫn thiết kế và gán nhãn dataset
 
-## 1.1 — Định nghĩa 3 lớp accessibility
+> **Trạng thái:** tài liệu này mô tả quy tắc hiện tại sau khi mở rộng khái niệm accessibility. Trước khi train cần chốt một quyết định còn mở: `fire_extinguisher` dùng **modal mask** (phần nhìn thấy) hay **amodal/full mask** (hình dạng đầy đủ kể cả phần bị che). Không được trộn hai định nghĩa trong cùng một class. Xem `docs/repository_audit.md`.
 
-Mỗi ảnh được gán một trong ba nhãn đánh giá khả năng tiếp cận bình chữa cháy.
+## 1. Khái niệm accessibility
 
-### Class 0 — Accessible
+Trong đề tài này, **nhìn thấy bình chữa cháy không đồng nghĩa với lấy được bình chữa cháy**.
 
-Bình chữa cháy có thể được tiếp cận trực tiếp mà không cần di chuyển vật thể khác.
+Accessibility cần phản ánh khả năng:
 
-Đặc điểm:
+1. tiếp cận vị trí bình;
+2. đưa tay tới vùng cầm/nắm;
+3. thao tác quanh tay cầm và hai bên bình;
+4. nhấc/rút bình ra khỏi giá, hộp hoặc vị trí lắp đặt.
 
-- đường tiếp cận phía trước bình tương đối thông thoáng;
-- không có vật thể đáng kể chắn trực tiếp phía trước;
-- có thể có đồ vật ở gần nhưng không ảnh hưởng rõ ràng đến việc tiếp cận;
-- bình có thể bị che một phần nhỏ nhưng việc tiếp cận vẫn không bị ảnh hưởng đáng kể.
+Do đó **functional access / extraction zone** không chỉ là vùng sàn ngay phía trước bình. Nó có thể gồm:
 
-Tên class:
+- vùng phía trước;
+- vùng bên hông cần cho thao tác tay;
+- vùng quanh tay cầm;
+- khoảng trống phía trên để nhấc/rút bình;
+- phần không gian bị cabinet/holder giới hạn nếu cấu trúc đó thực sự cản thao tác lấy bình.
 
-`accessible`
-
----
-
-### Class 1 — Partially blocked
-
-Khả năng tiếp cận bị hạn chế một phần nhưng bình chữa cháy vẫn có thể được tiếp cận.
-
-Đặc điểm:
-
-- có vật thể nằm một phần trong vùng tiếp cận;
-- hoặc bình bị che khuất một phần;
-- người sử dụng có thể phải né vật cản hoặc thực hiện thêm thao tác nhỏ;
-- vật cản chưa làm mất hoàn toàn đường tiếp cận trực tiếp.
-
-Tên class:
-
-`partially_blocked`
+Một cabinet hoặc giá đỡ **không tự động được coi là obstacle**.
 
 ---
 
-### Class 2 — Severely blocked
+## 2. Ba mức accessibility dự kiến
 
-Khả năng tiếp cận bị hạn chế rõ rệt.
+Các mức này là nhãn đánh giá cuối của hệ thống, không phải class segmentation YOLO.
 
-Đặc điểm:
+### Accessible
 
-- vật thể chắn trực tiếp khu vực phía trước bình;
-- người sử dụng có khả năng phải di chuyển vật cản trước khi lấy được bình;
-- hoặc bình bị che khuất đáng kể đồng thời khu vực tiếp cận cũng bị chắn;
-- đường tiếp cận trực tiếp không còn thông thoáng.
+- có thể tiếp cận và lấy bình trực tiếp;
+- vật ở gần nhưng không cản đáng kể;
+- không cần di chuyển một vật cản khác trước khi lấy bình.
 
-Tên class:
+### Partially blocked
 
-`severely_blocked`
+- vẫn có thể lấy bình nhưng thao tác bị hạn chế;
+- có thể cần né vật, đổi góc tay hoặc thực hiện thao tác bổ sung nhỏ;
+- vùng trước/bên/tay cầm/phía trên bị chiếm một phần.
 
----
+### Severely blocked / not readily accessible
 
-### Nguyên tắc gán nhãn accessibility
+- đường tiếp cận hoặc thao tác lấy bình bị cản rõ rệt;
+- có khả năng phải di chuyển vật khác trước;
+- hoặc không đủ không gian cần thiết để cầm, nhấc hoặc rút bình thuận lợi.
 
-Nhãn accessibility được xác định độc lập với các giá trị `q` và `r`.
+### Nguyên tắc ground truth
 
-Không sử dụng các quy tắc như:
+Không tạo nhãn accessibility trực tiếp từ công thức `q`, `r` hoặc `q+r`.
 
-`q > threshold → blocked`
-
-hoặc:
-
-`q + r > threshold → severely_blocked`
-
-để tạo ground truth.
-
-Các giá trị `q` và `r` chỉ được tính sau khi segmentation hoàn thành và được sử dụng làm đặc trưng của các phương pháp B, C và D.
-
-Nếu có thể, một phần dữ liệu nên được hai người gán nhãn độc lập để kiểm tra mức độ thống nhất của tiêu chí.
+Ground truth accessibility phải được xác định độc lập theo tiêu chí thao tác thực tế. Sau đó `q` và các đặc trưng vùng tiếp cận mới được dùng để dự đoán/giải thích nhãn đó.
 
 ---
 
-# 1.2 — Định nghĩa object classes
+## 3. Segmentation classes
 
-Trong phiên bản MVP chỉ sử dụng hai lớp segmentation chính.
+Dataset YOLO hiện chỉ có:
 
-## Class 0 — fire_extinguisher
+```text
+0 fire_extinguisher
+1 obstacle
+```
 
-Bao gồm phần nhìn thấy của bình chữa cháy.
+### Class 0 — `fire_extinguisher`
 
-Tên class:
+**Quy tắc modal/amodal phải được chốt trước khi train.**
 
-`fire_extinguisher`
+Hai lựa chọn:
 
-Cần gán mask sát theo phần nhìn thấy thực tế của bình.
+- **modal:** chỉ polygon phần thực sự nhìn thấy;
+- **amodal/full:** polygon toàn bộ hình dạng ước lượng, kể cả phần bị obstacle che.
 
----
+Khuyến nghị cho baseline YOLO tiêu chuẩn là **modal segmentation**, còn full/reference mask của synthetic nên lưu riêng nếu cần tính ground-truth occlusion.
 
-## Class 1 — obstacle
+### Class 1 — `obstacle`
 
-Bao gồm các vật thể có khả năng ảnh hưởng đến việc tiếp cận bình chữa cháy.
+Chỉ annotate vật/cấu trúc **thực sự liên quan tới khả năng lấy bình**, ví dụ:
 
-Ví dụ:
+- ghế, vali, thùng, xe đẩy hoặc thiết bị chắn phía trước;
+- vật đặt sát bên làm hạn chế thao tác tay;
+- vật/cấu trúc phía trên làm thiếu khoảng nhấc/rút;
+- cửa hoặc cấu trúc cố định nếu trong ảnh nó thực sự cản tiếp cận/lấy bình.
 
-- thùng carton;
-- ghế;
-- túi;
-- thùng rác;
-- hộp;
-- thiết bị;
-- đồ dùng;
-- các vật thể rắn khác đặt phía trước hoặc gần bình chữa cháy.
+Không annotate mọi đồ vật trong ảnh chỉ vì nó nằm gần bình.
 
-Tên class:
-
-`obstacle`
-
-Không gán các thành phần cố định của môi trường như:
-
-- tường;
-- sàn;
-- trần;
-- cửa nếu cửa không đóng vai trò vật cản trong tình huống nghiên cứu;
-- các vật thể nền không liên quan.
+Không mặc định annotate toàn bộ cabinet/holder thành obstacle.
 
 ---
 
-## Metadata loại vật cản
+## 4. Scenario synthetic hiện tại
 
-Mặc dù tất cả vật cản đều thuộc class `obstacle`, nên lưu thêm loại vật thể dưới dạng metadata.
+Các tên S1–S3 dưới đây phản ánh **bộ manual composite thực tế hiện có**.
 
-Ví dụ:
+### S1 — nearby / minimal obstruction
 
-`box`
+Vật được đặt gần bình hoặc lệch khỏi vùng thao tác chính; tác động tới accessibility nhỏ.
 
-`chair`
+Mục đích: hard negative, tránh quy tắc sai `near object = blocked`.
 
-`bag`
+### S2 — access obstruction with extinguisher still relatively visible
 
-`bin`
+Vật nằm trong vùng tiếp cận/thao tác nhưng bình vẫn nhìn thấy tương đối rõ.
 
-`equipment`
+Đây là nhóm quan trọng để kiểm tra trường hợp:
 
-`other`
+```text
+visibility tốt nhưng accessibility kém
+```
 
-Thông tin này không bắt buộc đối với YOLO nhưng hữu ích cho phân tích lỗi sau này.
+### S3 — access obstruction + visual occlusion
 
----
+Vật vừa cản vùng lấy bình vừa che một phần bình trong ảnh.
 
-# 1.3 — Định nghĩa scenario chụp
+### Các scenario mở rộng sau này
 
-Dataset cần bao gồm các nhóm tình huống sau.
+Nếu cần có thể thêm S4/S5..., ví dụ:
 
-## S0 — Clear
+- upper / extraction-space obstruction;
+- side / handle-space obstruction;
+- cabinet/holder constraint;
+- các variation về góc camera, ánh sáng và background.
 
-Bình chữa cháy không bị che và vùng phía trước không có vật cản đáng kể.
-
-Mục đích:
-
-Tạo dữ liệu cho class `accessible`.
-
----
-
-## S1 — Occlusion only
-
-Bình chữa cháy bị che một phần nhưng vùng tiếp cận vẫn thông thoáng.
-
-Ví dụ:
-
-một vật nằm phía bên cạnh camera khiến một phần bình bị che trong ảnh nhưng không thực sự chắn đường tiếp cận.
-
-Mục đích:
-
-Kiểm tra trường hợp:
-
-`q cao nhưng accessibility vẫn tốt`
+Script augmentation đã được sửa để nhận diện tự động bất kỳ `_S<number>` nào.
 
 ---
 
-## S2 — Approach obstruction only
+## 5. Additional real cases
 
-Bình chữa cháy vẫn nhìn thấy rõ nhưng có vật cản phía trước.
+Bộ real bổ sung hiện có 14 ảnh được ghi cố định trong:
 
-Ví dụ:
+```text
+metadata/additional_real_split.csv
+```
 
-- thùng carton;
-- ghế;
-- túi lớn;
-- thiết bị.
+Các ảnh này bổ sung:
 
-Mục đích:
+- cabinet/reference cases;
+- accessible controls;
+- door/chair/clutter/equipment obstructions;
+- upper/extraction-space obstruction.
 
-Đây là scenario quan trọng nhất để kiểm chứng giả thuyết nghiên cứu:
-
-`q thấp nhưng r cao`
-
----
-
-## S3 — Occlusion + approach obstruction
-
-Bình vừa bị che khuất vừa có vật cản trong vùng tiếp cận.
-
-Mục đích:
-
-Tạo các trường hợp accessibility bị hạn chế rõ rệt.
+Không thay đổi split của các ảnh này sau khi bắt đầu experiment chính thức.
 
 ---
 
-## S4 — Nearby but not blocking
+## 6. Hard cases cần có trong evaluation
 
-Có vật thể nằm gần bình chữa cháy nhưng không thực sự chắn đường tiếp cận.
+### H1 — visible but blocked
 
-Ví dụ:
+Hai ảnh đều nhìn thấy bình rõ, nhưng chỉ một ảnh có vật thật sự cản việc lấy bình.
 
-một chiếc ghế nằm bên cạnh bình nhưng không nằm phía trước.
+### H2 — near vs blocking
 
-Mục đích:
+Cùng loại vật thể:
 
-Tạo hard negative và kiểm tra hệ thống có nhầm:
+- một ảnh vật ở gần nhưng không cản;
+- một ảnh vật nằm trong functional access zone.
 
-`near object = blocked`
+### H3 — front vs side vs upper obstruction
 
-hay không.
+Mức độ nhìn thấy bình tương tự nhưng vị trí vật cản khác nhau:
 
----
+- phía trước;
+- bên hông/tay cầm;
+- phía trên/hướng nhấc bình.
 
-## S5 — Điều kiện quan sát khác nhau
+### H4 — cabinet/reference
 
-Lặp lại các scenario trên với:
+Bình ở trong cabinet nhưng vẫn accessible so với cabinet/structure thực sự làm hạn chế extraction.
 
-- góc camera khác nhau;
-- khoảng cách khác nhau;
-- ánh sáng khác nhau;
-- background khác nhau;
-- loại vật cản khác nhau;
-- kích thước vật cản khác nhau.
+### H5 — perspective
 
-Đây không phải một accessibility class mới mà là nhóm variation dùng để kiểm tra robustness.
+Cùng bố trí vật thể nhưng góc camera khác nhau để kiểm tra độ nhạy với perspective.
 
 ---
 
-## Dataset pilot
+## 7. Train / validation / test
 
-Trước khi thu thập toàn bộ dataset, nên chụp thử khoảng:
+Nguyên tắc quan trọng nhất là chống data leakage.
 
-`15–20 ảnh / scenario`
+Không để các ảnh gần như cùng một scene/setup xuất hiện ở nhiều split khác nhau.
 
-để kiểm tra:
+Các synthetic tạo từ cùng một base image phải kế thừa split của base. Bộ synthetic hiện tại được dùng ở train.
 
-- tiêu chí gán nhãn;
-- segmentation;
-- pipeline;
-- tính khả thi của `q`;
-- cách tạo vùng tiếp cận.
+Additional real images dùng fixed split manifest.
 
-Sau khi pilot hoạt động mới mở rộng dataset.
+### Vai trò các split
 
-Mục tiêu ban đầu hợp lý:
+**Train**
+- học tham số segmentation model;
+- chỉ train mới được augmentation.
 
-`300–500 ảnh`
+**Validation**
+- chọn model/checkpoint;
+- điều chỉnh threshold và thiết kế access zone;
+- không dùng để báo cáo duy nhất kết quả cuối.
 
-sau đó có thể mở rộng nếu cần.
+**Test**
+- chỉ dùng sau khi phương pháp đã cố định;
+- dùng cho kết quả cuối, confusion matrix và comparison giữa các phương pháp/model.
 
----
+### Caveat hiện tại
 
-# 1.4 — Thiết kế hard pairs
-
-Hard pair là hai ảnh rất giống nhau nhưng có sự khác biệt quan trọng về accessibility.
-
-Hard pairs đặc biệt hữu ích để kiểm tra xem thuật toán có thực sự sử dụng spatial context hay không.
-
-## HP1 — Bình đều nhìn thấy rõ nhưng accessibility khác nhau
-
-Ảnh A:
-
-- bình nhìn thấy rõ;
-- phía trước thông thoáng;
-- `accessible`.
-
-Ảnh B:
-
-- bình vẫn nhìn thấy rõ tương tự;
-- có vật cản trực tiếp phía trước;
-- `partially_blocked` hoặc `severely_blocked`.
-
-Đây là hard pair quan trọng nhất.
+Val và test hiện chỉ có 2 ảnh obstacle-positive mỗi split. Đây chỉ đủ cho smoke test, **không đủ cho kết luận khoa học cuối cùng**. Trước paper/defense cần bổ sung thêm các case real độc lập.
 
 ---
 
-## HP2 — Mức che khuất tương tự nhưng vùng tiếp cận khác nhau
+## 8. Augmentation
 
-Hai ảnh có mức occlusion gần giống nhau.
+Augmentation hiện tại chỉ là **photometric**:
 
-Ảnh A:
+- brightness / contrast;
+- gamma;
+- HSV nhẹ;
+- blur nhẹ;
+- Gaussian noise;
+- sharpen nhẹ.
 
-- vùng tiếp cận thông thoáng.
+Không rotate/crop/flip/resize trong offline augmentation, vì polygon được copy nguyên.
 
-Ảnh B:
+Val/test không augmentation.
 
-- vùng tiếp cận bị chắn.
-
-Mục tiêu:
-
-kiểm tra xem `r` có bổ sung thông tin mà `q` không thể cung cấp hay không.
-
----
-
-## HP3 — Vùng tiếp cận tương tự nhưng mức che khuất khác nhau
-
-Hai ảnh có bố trí vật cản phía trước tương tự nhưng bình bị che ở mức khác nhau.
-
-Mục tiêu:
-
-đánh giá đóng góp của `q`.
+1046 ảnh train augmented **không được mô tả như 1046 scene độc lập**.
 
 ---
 
-## HP4 — Near vs Blocking
+## 9. Validation trước khi train
 
-Ảnh A:
+Luôn chạy:
 
-vật thể nằm cạnh bình nhưng không nằm trên đường tiếp cận.
+```bash
+python scripts/build_source_dataset.py
+python scripts/validate_yolo_dataset.py data/fire_accessibility_source
+python scripts/augment_train_dataset.py
+python scripts/validate_yolo_dataset.py data/fire_accessibility_augmented
+```
 
-Ảnh B:
+Expected counts với dataset hiện tại:
 
-cùng vật thể được dịch vào phía trước bình.
+```text
+source:
+  train 182
+  val    30
+  test   31
 
-Mục tiêu:
+augmented:
+  train 1046
+  val     30
+  test    31
+```
 
-kiểm tra hệ thống có phân biệt được:
-
-`vật ở gần`
-
-và
-
-`vật thực sự cản trở`
-
-hay không.
-
----
-
-## HP5 — Perspective pair
-
-Giữ nguyên bố trí vật thể nhưng thay đổi góc camera.
-
-Mục tiêu:
-
-kiểm tra ảnh hưởng của perspective đến `q`, `r` và accessibility prediction.
+Nếu counts thay đổi ngoài chủ ý, dừng lại và kiểm tra trước khi train.
 
 ---
 
-# 1.5 — Quy tắc chia Train / Validation / Test
-
-Không chia ảnh hoàn toàn ngẫu nhiên.
-
-Các ảnh gần giống nhau của cùng một cảnh không được xuất hiện đồng thời trong train và test.
-
-Ví dụ không được phép:
-
-`IMG_001 → train`
-
-`IMG_002 → test`
-
-nếu hai ảnh chỉ khác nhau vài giây hoặc vài centimet camera.
-
----
-
-## Đơn vị chia dữ liệu
-
-Mỗi nhóm ảnh cần có một `scene_group_id`.
-
-Ví dụ:
-
-`room01_ext01_session01`
-
-Tất cả ảnh thuộc cùng một scene group phải nằm trong cùng một split.
-
----
-
-## Tỷ lệ đề xuất
-
-Sử dụng:
-
-`70% train`
-
-`15% validation`
-
-`15% test`
-
-Tỷ lệ có thể thay đổi nhẹ để đảm bảo phân bố class hợp lý.
-
----
-
-## Train set
-
-Dùng để:
-
-- train segmentation model;
-- học các tham số của model.
-
----
-
-## Validation set
-
-Dùng để:
-
-- chọn model;
-- điều chỉnh hyperparameter;
-- chọn `α`, `β`;
-- chọn threshold phân loại;
-- kiểm tra các phiên bản approach zone.
-
-Không được dùng test set để thực hiện các bước trên.
-
----
-
-## Test set
-
-Chỉ sử dụng sau khi phương pháp đã được cố định.
-
-Test set dùng để báo cáo kết quả cuối cùng:
-
-- Accuracy;
-- Macro-F1;
-- Recall;
-- confusion matrix;
-- comparison A/B/C/D.
-
-Không điều chỉnh thuật toán dựa trên kết quả test.
-
----
-
-## Quy tắc chống data leakage
-
-Không để cùng một:
-
-- chuỗi ảnh liên tiếp;
-- setup vật cản giống hệt nhau;
-- hard pair;
-- burst photo;
-- video frame gần nhau
-
-xuất hiện ở nhiều split khác nhau.
-
-Một hard pair phải nằm hoàn toàn trong:
-
-`train`
-
-hoặc:
-
-`validation`
-
-hoặc:
-
-`test`
-
-không được tách hai ảnh của cùng một pair sang hai tập khác nhau.
-
----
-
-## Ưu tiên kiểm tra khả năng tổng quát hóa
-
-Nếu thu thập đủ dữ liệu từ nhiều địa điểm, nên ưu tiên để test set chứa:
-
-- phòng chưa xuất hiện trong train;
-- bình chữa cháy chưa xuất hiện trong train;
-- background mới;
-- bố trí vật cản mới.
-
-Điều này giúp đánh giá khả năng tổng quát hóa thực tế của phương pháp.
-
----
-
-# Metadata nên lưu cho mỗi ảnh
-
-Mỗi ảnh nên có các trường:
-
-`image_id`
-
-`room_id`
-
-`extinguisher_id`
-
-`session_id`
-
-`scene_group_id`
-
-`scenario_id`
-
-`accessibility_class`
-
-`obstacle_type`
-
-`camera_angle`
-
-`camera_distance`
-
-`lighting_condition`
-
-`hard_pair_id`
-
-`split`
-
-Ví dụ:
-
-`IMG_0042, room02, ext01, session03, room02_ext01_session03, S2, severely_blocked, box, left, medium, indoor, HP01, test`
+## 10. Metadata nên lưu khi mở rộng dataset
+
+Ưu tiên các trường:
+
+```text
+image_id
+source
+scene_group_id
+scenario_id
+accessibility_class
+obstacle_type
+obstruction_region   # front / side / handle / upper / other
+camera_angle
+lighting_condition
+split
+source_url
+license
+```
+
+`source_url` và `license` đặc biệt quan trọng đối với ảnh lấy từ web nếu sau này dataset được công khai hoặc dùng trong bài báo.
