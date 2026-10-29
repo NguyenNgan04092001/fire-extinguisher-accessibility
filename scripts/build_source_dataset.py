@@ -24,6 +24,7 @@ import shutil
 import sys
 
 BASE_ROOT = Path("data/base_yolo")
+BASE_AUDIT_LABELS = Path("annotations/cvat_potential_obstacle_audit/labels/train")
 SYN_IMAGES = Path("data/cvat_synthetic/images")
 SYN_LABELS = Path("annotations/cvat_synthetic/labels/train")
 REAL_IMAGES = Path("data/additional_real/raw")
@@ -115,8 +116,17 @@ def copy_base_dataset():
 
         count = 0
         for img_path in image_files(img_dir):
-            label_path = lbl_dir / f"{img_path.stem}.txt"
-            copy_pair(img_path, label_path, split, "base")
+            base_label_path = lbl_dir / f"{img_path.stem}.txt"
+            audit_label_path = BASE_AUDIT_LABELS / f"{img_path.stem}.txt"
+
+            if audit_label_path.exists():
+                label_path = audit_label_path
+                source = "base potential-obstacle audit"
+            else:
+                label_path = base_label_path
+                source = "base"
+
+            copy_pair(img_path, label_path, split, source)
             count += 1
         counts[split] = count
     return counts

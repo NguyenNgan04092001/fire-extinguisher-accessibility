@@ -1,0 +1,5 @@
+names:
+  0: fire_extinguisher
+  1: obstacle
+path: .
+train: train.txt
