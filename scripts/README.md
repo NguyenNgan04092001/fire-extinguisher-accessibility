@@ -1,21 +1,48 @@
 # Dataset scripts
 
-The `scripts/` directory contains utilities created during dataset preparation. They do not all belong to the final training pipeline.
+This directory contains both the active dataset pipeline and historical utilities created while the dataset was being developed.
 
-## Core pipeline scripts
+## Active pipeline
 
-These scripts are currently the most important for reproducing the active dataset workflow:
+Use these scripts for the current project state:
 
-- `prepare_cvat_synthetic.py` — prepares manually composited synthetic images and corresponding extinguisher labels for CVAT.
-- `build_train_with_synthetic.py` — merges the base YOLO dataset with synthetic obstacle annotations into the source accessibility dataset.
-- `augment_train_dataset.py` — creates the augmented training dataset using photometric transformations while leaving validation and test unchanged.
-- `split_base_yolo.py` — creates the original base train/val/test split.
-- `create_metadata_base.py` — creates metadata for the selected base images.
-- `visualize_yolo_labels.py` — visual inspection of YOLO segmentation labels.
+1. `create_metadata_base.py` — creates the original fixed base split metadata.
+2. `split_base_yolo.py` — builds the base YOLO train/val/test dataset from the selected base images and CVAT labels.
+3. `prepare_cvat_synthetic.py` — prepares manually composited S1/S2/S3 images for CVAT by copying the corresponding extinguisher labels.
+4. `build_source_dataset.py` — **canonical source builder**. Rebuilds `data/fire_accessibility_source` from:
+   - base YOLO data;
+   - annotated synthetic data;
+   - 14 additional real-world images, using `metadata/additional_real_split.csv`.
+5. `validate_yolo_dataset.py` — checks image/label parity, class IDs, polygon coordinates, and class counts.
+6. `augment_train_dataset.py` — creates photometric augmentations for train only; val/test are copied unchanged.
+7. `visualize_yolo_labels.py` — visual sanity check for segmentation annotations.
 
-## Data-preparation / one-off utilities
+### Recommended commands
 
-These were useful during earlier preparation stages but are not part of the normal end-to-end pipeline:
+```bash
+python scripts/build_source_dataset.py
+python scripts/validate_yolo_dataset.py data/fire_accessibility_source
+python scripts/augment_train_dataset.py
+python scripts/validate_yolo_dataset.py data/fire_accessibility_augmented
+```
+
+Only after both validation commands succeed should model training begin.
+
+## Important behavior
+
+`build_source_dataset.py` deletes and rebuilds `data/fire_accessibility_source`. It is safe for the current workflow because the additional real-image split is now stored in the tracked manifest:
+
+```text
+metadata/additional_real_split.csv
+```
+
+The raw image files themselves remain local under `data/` and are intentionally excluded from Git.
+
+`augment_train_dataset.py` recognizes any synthetic source name ending in `_S<number>` (for example S1, S2, S3, or a future S4), rather than hard-coding only S1–S3.
+
+## One-off / repair utilities
+
+These are not part of the normal training pipeline but are kept for reproducibility and repair:
 
 - `rename_base_images.py`
 - `rename_obstacles.py`
@@ -25,39 +52,35 @@ These were useful during earlier preparation stages but are not part of the norm
 - `make_cvat_yolo_zip.py`
 - `select_diverse_base.py`
 
-Keep these scripts because they document how the dataset was built and may be useful for reproducibility or repair.
+`convert_disguised_psd.py` requires `psd-tools`, which is included in `requirements.txt`.
 
-## Legacy / experimental synthetic generation
+## Legacy experimental scripts
 
-The following scripts belong to an earlier automatic S1 generation attempt and should not be treated as the current recommended synthetic-data workflow:
+The following belong to an earlier automatic S1-generation experiment and are **not** the recommended current workflow:
 
 - `generate_s1_candidates.py`
 - `generate_s1_occlusion.py`
 
-The current synthetic obstruction set was manually curated / composited and then annotated in CVAT.
+The final S1–S3 synthetic source images were manually curated/composited and then annotated in CVAT.
 
-## Current recommended execution order
-
-For the existing project state, the relevant sequence is approximately:
+## Current high-level pipeline
 
 ```text
-base selection / split
-        ↓
-CVAT base annotation
-        ↓
-manual synthetic composition
-        ↓
-prepare_cvat_synthetic.py
-        ↓
-CVAT obstacle annotation
-        ↓
-build_train_with_synthetic.py
-        ↓
-add additional real images + labels to source split
-        ↓
-augment_train_dataset.py
-        ↓
-model training
+selected base images + CVAT labels
+              ↓
+          base_yolo
+              ↓
+manual S1–S3 composites + CVAT obstacle labels
+              ↓
+14 additional real images + CVAT labels
+              ↓
+     build_source_dataset.py
+              ↓
+     validate_yolo_dataset.py
+              ↓
+     augment_train_dataset.py
+              ↓
+     validate_yolo_dataset.py
+              ↓
+           training
 ```
-
-Large image datasets are stored locally under `data/` and are intentionally excluded from Git.
