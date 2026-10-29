@@ -8,12 +8,15 @@ Computer vision project for automatic assessment of fire-extinguisher accessibil
 
 The core idea is that **visibility is not the same as accessibility**. A fire extinguisher may be clearly visible but still difficult to retrieve because of objects or structures that block the approach, grip, or extraction space.
 
-The current project therefore considers two complementary aspects:
+The functional access zone may include:
 
-- visual occlusion of the fire extinguisher;
-- obstruction of the functional access / extraction zone around the extinguisher.
+- the area in front of the extinguisher;
+- lateral / hand-access space;
+- space around the handle;
+- upper extraction space required to lift or remove the extinguisher;
+- cabinet/holder constraints only when they actually restrict extraction.
 
-The access zone is not limited to the floor area directly in front of the extinguisher. It can also include lateral space and the space above / around the handle that is required to grip, lift, or remove the extinguisher.
+A cabinet itself is **not automatically an obstacle**.
 
 ## Current segmentation classes
 
@@ -22,11 +25,9 @@ The access zone is not limited to the floor area directly in front of the exting
 1 obstacle
 ```
 
-A cabinet or fixed structure is **not automatically labeled as an obstacle**. It is considered an obstacle only when it clearly restricts access or extraction.
-
 ## Current dataset status
 
-Source dataset after the latest update:
+Source dataset:
 
 ```text
 train: 182 images / 182 labels
@@ -42,7 +43,7 @@ val:     30 images / 30 labels
 test:    31 images / 31 labels
 ```
 
-Obstacle-containing images in the augmented dataset:
+Obstacle-positive images in the augmented dataset:
 
 ```text
 train: 534
@@ -52,27 +53,18 @@ test:    2
 
 The 1046 training images are **not 1046 independent scenes**. They are generated from 182 source training images using controlled photometric augmentation.
 
-## Dataset composition
-
-The current source dataset combines:
-
-- base fire-extinguisher images;
-- manually composited synthetic obstruction scenarios;
-- additional real-world images containing cabinets, nearby structures, front/side obstructions, and extraction-space constraints.
-
-The additional real images were deliberately split across train, validation, and test so that obstacle cases are present outside the training set.
-
 ## Project structure
 
 ```text
 .
-├── annotations/        # CVAT / YOLO segmentation annotations
-├── assets/             # small project assets and visual material
+├── annotations/        # tracked CVAT / YOLO segmentation annotations
+├── assets/             # small obstacle/reference assets
 ├── configs/            # YOLO dataset YAML files
-├── docs/               # research notes and current project status
-├── results/            # lightweight checks / visual outputs
-├── scripts/            # dataset preparation utilities
-├── src/                # reusable project code
+├── docs/               # project status and repository/methodology audit
+├── metadata/           # tracked split manifests
+├── results/            # lightweight annotation checks / visual outputs
+├── scripts/            # dataset preparation and validation utilities
+├── src/                # reusable accessibility-analysis code (future)
 ├── dataset_guideline.md
 ├── requirements.txt
 └── README.md
@@ -80,43 +72,57 @@ The additional real images were deliberately split across train, validation, and
 
 Large image datasets, generated augmented datasets, model weights, and training runs are intentionally excluded from Git.
 
-## Dataset pipeline
+## Reproducible dataset pipeline
 
 ```text
-raw / selected images
+base dataset + annotations
         ↓
-CVAT segmentation
+synthetic annotations
         ↓
-source dataset
+additional real images + fixed split manifest
         ↓
-controlled photometric augmentation
+build_source_dataset.py
         ↓
-training dataset
+validate_yolo_dataset.py
         ↓
-segmentation model
+augment_train_dataset.py
         ↓
-accessibility analysis
+validate_yolo_dataset.py
+        ↓
+model training
 ```
 
-Core dataset scripts are documented in [`scripts/README.md`](scripts/README.md).
+Recommended commands:
 
-## Main dataset configs
+```bash
+python scripts/build_source_dataset.py
+python scripts/validate_yolo_dataset.py data/fire_accessibility_source
+python scripts/augment_train_dataset.py
+python scripts/validate_yolo_dataset.py data/fire_accessibility_augmented
+```
 
-- `configs/base_yolo.yaml`
-- `configs/fire_accessibility_source.yaml`
-- `configs/fire_accessibility_augmented.yaml`
+The additional real-image split is stored in:
 
-## Important annotation rule
+```text
+metadata/additional_real_split.csv
+```
 
-For the accessibility task, the project distinguishes between:
+## Important pre-training blocker
 
-- an object being **near** the extinguisher;
-- an object actually **blocking** approach, grip, or extraction.
+Training is intentionally paused while one annotation decision is resolved: the `fire_extinguisher` target must use a consistent **modal (visible-only)** or **amodal/full** mask definition.
 
-This distinction is important for hard-negative cases and for avoiding the incorrect rule `near object = inaccessible`.
+Synthetic composites may currently inherit a full extinguisher mask from the unobstructed base image, while real-image annotations are naturally visible-only. These semantics should not be mixed in a final training dataset.
 
-## Current state
+See:
 
-Dataset preparation is complete enough for the next experimental stage, but model training is intentionally paused while the repository and methodology are being cleaned and documented.
+- [`docs/repository_audit.md`](docs/repository_audit.md)
+- [`docs/project_status.md`](docs/project_status.md)
+- [`dataset_guideline.md`](dataset_guideline.md)
 
-See [`docs/project_status.md`](docs/project_status.md) for the current state and next steps.
+## Evaluation caveat
+
+Validation and test currently contain only two obstacle-positive images each. This is sufficient for pipeline verification but should be expanded before final scientific comparisons or publication claims.
+
+## Script documentation
+
+See [`scripts/README.md`](scripts/README.md) for the active pipeline, repair utilities, and legacy experimental scripts.
