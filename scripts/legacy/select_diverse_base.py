@@ -12,7 +12,7 @@ Mục tiêu:
 - Xuất CSV ghi lại ảnh được chọn.
 
 Ví dụ:
-python scripts/select_diverse_base.py \
+python scripts/legacy/select_diverse_base.py \
     --input data/base_selected \
     --output data/base_diverse_200 \
     --n 200 \
