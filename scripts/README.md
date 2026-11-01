@@ -1,86 +1,57 @@
-# Dataset scripts
+# Scripts
 
-This directory contains both the active dataset pipeline and historical utilities created while the dataset was being developed.
+Scripts used to build the dataset and reproduce the q/r accessibility experiments.
 
-## Active pipeline
+## Dataset pipeline
 
-Use these scripts for the current project state:
+- `create_metadata_base.py`
+- `split_base_yolo.py`
+- `prepare_cvat_synthetic.py`
+- `build_source_dataset.py`
+- `validate_yolo_dataset.py`
+- `augment_train_dataset.py`
 
-1. `create_metadata_base.py` — creates the original fixed base split metadata.
-2. `split_base_yolo.py` — builds the base YOLO train/val/test dataset from the selected base images and CVAT labels.
-3. `prepare_cvat_synthetic.py` — prepares manually composited S1/S2/S3 images for CVAT by copying the corresponding extinguisher labels.
-4. `build_source_dataset.py` — **canonical source builder**. Rebuilds `data/fire_accessibility_source` from:
-   - base YOLO data;
-   - annotated synthetic data;
-   - 14 additional real-world images, using `metadata/additional_real_split.csv`.
-5. `validate_yolo_dataset.py` — checks image/label parity, class IDs, polygon coordinates, and class counts.
-6. `augment_train_dataset.py` — creates photometric augmentations for train only; val/test are copied unchanged.
-7. `visualize_yolo_labels.py` — visual sanity check for segmentation annotations.
+## q — visual occlusion
 
-### Recommended commands
+- `compute_occlusion_q.py` — single-image q calculation.
+- `compute_occlusion_q_instances.py` — instance-level q calculation.
+- `evaluate_q_synthetic.py` — q statistics on the synthetic dataset.
+- `audit_q_consistency.py` — annotation consistency audit.
+- `evaluate_q_yolo.py` — visible-mask baseline.
+- `evaluate_q_components.py` — GT/predicted mask component analysis.
+- `evaluate_q_yoloe.py` — YOLOE obstacle baseline.
 
-```bash
-python scripts/build_source_dataset.py
-python scripts/validate_yolo_dataset.py data/fire_accessibility_source
-python scripts/augment_train_dataset.py
-python scripts/validate_yolo_dataset.py data/fire_accessibility_augmented
-```
+## r — access obstruction
 
-Only after both validation commands succeed should model training begin.
+- `compute_access_obstruction.py` — creates Z1/Z2 and computes r.
+- `evaluate_r_gt.py` — oracle evaluation on `real_extension_v3`.
+- `evaluate_r_v3.py` — FastSAM baseline.
+- `evaluate_r_coco.py` — closed-set COCO baseline.
+- `evaluate_r_yoloe.py` — YOLOE open-vocabulary baseline.
+- `tune_r_yoloe.py` — confidence tuning using train + validation only.
+- `evaluate_r_yoloe_test.py` — held-out diagnostic evaluation.
+- `evaluate_r_synthetic_gt.py` — computes q+r features for the synthetic extinguisher instances.
 
-## Important behavior
+## Accessibility experiment
 
-`build_source_dataset.py` deletes and rebuilds `data/fire_accessibility_source`. It is safe for the current workflow because the additional real-image split is now stored in the tracked manifest:
+- `prepare_accessibility_gt.py` — prepares images and CSV for independent accessibility labeling.
+- `label_accessibility_gt.py` — labeling utility.
+- `evaluate_m1_m2_m3.py` — grouped 5-fold comparison:
+  - M1 = q
+  - M2 = r
+  - M3 = q+r
+- `bootstrap_m2_m3.py` — cluster bootstrap comparison.
+- `repeated_cv_m1_m2_m3.py` — 50× repeated stratified grouped CV.
+- `error_analysis_m2_m3.py` — compares errors corrected and introduced by M3.
 
-```text
-metadata/additional_real_split.csv
-```
+## Visualization / diagnostics
 
-The raw image files themselves remain local under `data/` and are intentionally excluded from Git.
+- `visualize_gt_r.py`
+- `visualize_yoloe_debug.py`
+- `test_fire_inference.py`
 
-`augment_train_dataset.py` recognizes any synthetic source name ending in `_S<number>` (for example S1, S2, S3, or a future S4), rather than hard-coding only S1–S3.
+## Historical / repair utilities
 
-## One-off / repair utilities
+The repository also keeps several one-off scripts used during dataset construction, including image renaming, PSD conversion, obstacle extraction, candidate generation and CVAT preparation.
 
-These are not part of the normal training pipeline but are kept for reproducibility and repair:
-
-- `rename_base_images.py`
-- `rename_obstacles.py`
-- `extract_coco_obstacles.py`
-- `convert_disguised_psd.py`
-- `fix_synthetic_orientation.py`
-- `make_cvat_yolo_zip.py`
-- `select_diverse_base.py`
-
-`convert_disguised_psd.py` requires `psd-tools`, which is included in `requirements.txt`.
-
-## Legacy experimental scripts
-
-The following belong to an earlier automatic S1-generation experiment and are **not** the recommended current workflow:
-
-- `generate_s1_candidates.py`
-- `generate_s1_occlusion.py`
-
-The final S1–S3 synthetic source images were manually curated/composited and then annotated in CVAT.
-
-## Current high-level pipeline
-
-```text
-selected base images + CVAT labels
-              ↓
-          base_yolo
-              ↓
-manual S1–S3 composites + CVAT obstacle labels
-              ↓
-14 additional real images + CVAT labels
-              ↓
-     build_source_dataset.py
-              ↓
-     validate_yolo_dataset.py
-              ↓
-     augment_train_dataset.py
-              ↓
-     validate_yolo_dataset.py
-              ↓
-           training
-```
+These files are not part of the final experimental pipeline but are retained for reproducibility.

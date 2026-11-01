@@ -31,6 +31,10 @@ REAL_IMAGES = Path("data/additional_real/raw")
 REAL_LABELS = Path("annotations/cvat_real_additional/labels/train")
 REAL_SPLIT_CSV = Path("metadata/additional_real_split.csv")
 
+V3_IMAGES = Path("data/real_extension_v3/selected")
+V3_LABELS = Path("annotations/cvat_real_extension_v3")
+V3_MANIFEST = Path("metadata/real_extension_v3.csv")
+
 OUT_ROOT = Path("data/fire_accessibility_source")
 YAML_PATH = Path("configs/fire_accessibility_source.yaml")
 
@@ -205,6 +209,110 @@ def copy_additional_real():
     return counts, obstacle_counts
 
 
+
+def copy_real_extension_v3():
+    if not V3_MANIFEST.exists():
+        raise FileNotFoundError(f"Missing v3 manifest: {V3_MANIFEST}")
+    if not V3_IMAGES.exists():
+        raise FileNotFoundError(f"Missing v3 images: {V3_IMAGES}")
+    if not V3_LABELS.exists():
+        raise FileNotFoundError(f"Missing v3 labels: {V3_LABELS}")
+
+    counts = {split: 0 for split in SPLITS}
+    obstacle_counts = {split: 0 for split in SPLITS}
+    scenario_counts = {f"S{i}": 0 for i in range(4)}
+
+    with V3_MANIFEST.open("r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        required = {"file_name", "scenario", "split"}
+        if not required.issubset(reader.fieldnames or []):
+            raise ValueError(
+                f"V3 manifest must contain columns {sorted(required)}: "
+                f"{V3_MANIFEST}"
+            )
+
+        seen = set()
+
+        for row in reader:
+            file_name = row["file_name"].strip()
+            scenario = row["scenario"].strip()
+            split = row["split"].strip()
+
+            if file_name in seen:
+                raise ValueError(f"Duplicate v3 image in manifest: {file_name}")
+            seen.add(file_name)
+
+            if scenario not in {"S0", "S1", "S2", "S3"}:
+                raise ValueError(
+                    f"Invalid scenario '{scenario}' for {file_name}"
+                )
+
+            if split not in SPLITS:
+                raise ValueError(
+                    f"Invalid split '{split}' for {file_name}"
+                )
+
+            img_path = V3_IMAGES / scenario / file_name
+            label_path = V3_LABELS / split / "labels" / f"{Path(file_name).stem}.txt"
+
+            classes = validate_label(label_path)
+            has_obstacle = 1 in classes
+
+            # Dataset design:
+            # S0/S1: no functional access obstacle
+            # S2/S3: functional access obstacle must be annotated
+            expected_obstacle = scenario in {"S2", "S3"}
+
+            if has_obstacle != expected_obstacle:
+                raise ValueError(
+                    f"V3 obstacle/scenario mismatch for {file_name}: "
+                    f"scenario={scenario}, obstacle_label={has_obstacle}"
+                )
+
+            copy_pair(
+                img_path,
+                label_path,
+                split,
+                f"real extension v3 {scenario}",
+            )
+
+            counts[split] += 1
+            scenario_counts[scenario] += 1
+
+            if has_obstacle:
+                obstacle_counts[split] += 1
+
+    if len(seen) != 28:
+        raise ValueError(
+            f"Expected 28 v3 images in manifest, found {len(seen)}"
+        )
+
+    expected_split_counts = {
+        "train": 14,
+        "val": 6,
+        "test": 8,
+    }
+    if counts != expected_split_counts:
+        raise ValueError(
+            f"Unexpected v3 split counts: {counts}; "
+            f"expected {expected_split_counts}"
+        )
+
+    expected_scenarios = {
+        "S0": 10,
+        "S1": 10,
+        "S2": 3,
+        "S3": 5,
+    }
+    if scenario_counts != expected_scenarios:
+        raise ValueError(
+            f"Unexpected v3 scenario counts: {scenario_counts}; "
+            f"expected {expected_scenarios}"
+        )
+
+    return counts, obstacle_counts, scenario_counts
+
+
 def validate_output():
     summary = {}
     for split in SPLITS:
@@ -272,6 +380,12 @@ def main():
     real_counts, real_obstacle_counts = copy_additional_real()
     print(f"real: {real_counts}")
     print(f"real obstacle images: {real_obstacle_counts}")
+
+    print("\nAdd real extension v3...")
+    v3_counts, v3_obstacle_counts, v3_scenario_counts = copy_real_extension_v3()
+    print(f"v3: {v3_counts}")
+    print(f"v3 obstacle images: {v3_obstacle_counts}")
+    print(f"v3 scenarios: {v3_scenario_counts}")
 
     write_yaml()
     summary = validate_output()

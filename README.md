@@ -1,128 +1,355 @@
 # Fire Extinguisher Accessibility
 
-Computer vision project for automatic assessment of fire-extinguisher accessibility from RGB images.
+Computer vision research project for automatic assessment of fire-extinguisher accessibility from a single RGB image.
 
 ## Research topic
 
 **Автоматическая оценка доступности огнетушителей по изображениям на основе совместного анализа визуального перекрытия и зоны подхода**
 
-The core idea is that **visibility is not the same as accessibility**. A fire extinguisher may be clearly visible but still difficult to retrieve because of objects or structures that block the approach, grip, or extraction space.
+Core idea:
 
-The functional access zone may include:
+> **Visibility is not the same as accessibility.**
 
-- the area in front of the extinguisher;
-- lateral / hand-access space;
-- space around the handle;
-- upper extraction space required to lift or remove the extinguisher;
-- cabinet/holder constraints only when they actually restrict extraction.
+A fire extinguisher may remain clearly visible while its approach, grip, or extraction space is blocked.
 
-A cabinet itself is **not automatically an obstacle**.
+The project therefore models two complementary quantities:
 
-## Current segmentation classes
+- **q — visual occlusion:** how much of the extinguisher is directly occluded;
+- **r — access obstruction:** how much of the functional manipulation and approach area is occupied.
 
-```text
-0 fire_extinguisher
-1 obstacle
-```
-
-## Current dataset status
-
-Source dataset:
+The final research comparison is:
 
 ```text
-train: 182 images / 182 labels
-val:    30 images / 30 labels
-test:   31 images / 31 labels
+M1 = q only
+M2 = r only
+M3 = q + r
 ```
 
-Augmented dataset:
+---
+
+## Dataset
+
+### Base dataset
+
+Initial Fire Extinguisher dataset:
 
 ```text
-train: 1046 images / 1046 labels
-val:     30 images / 30 labels
-test:    31 images / 31 labels
+Initial images:              670
+After near-duplicate filter: 662
+Selected / annotated base:   176
 ```
 
-Obstacle-positive images in the augmented dataset:
+Base split:
 
 ```text
-train: 534
-val:     2
-test:    2
+train: 123
+val:    26
+test:   27
 ```
 
-The 1046 training images are **not 1046 independent scenes**. They are generated from 182 source training images using controlled photometric augmentation.
+### Synthetic data
 
-## Project structure
+53 manually curated synthetic/composite images were used for controlled occlusion and obstruction experiments.
+
+Because several images contain multiple extinguishers, these correspond to:
+
+```text
+53 images
+61 extinguisher instances
+```
+
+### Real extension v3
+
+A final real-image extension contains 28 images:
+
+```text
+S0: 10
+S1: 10
+S2:  3
+S3:  5
+```
+
+Split:
+
+```text
+train: 14
+val:    6
+test:   8
+```
+
+### Final source dataset
+
+```text
+train: 196 images
+val:    36 images
+test:   39 images
+total: 271 images
+```
+
+Obstacle-positive images:
+
+```text
+train: 70
+val:    9
+test:   6
+```
+
+Offline photometric augmentation produces:
+
+```text
+train: 1102
+val:     36
+test:    39
+```
+
+Geometry-changing augmentation is avoided to preserve spatial relations.
+
+---
+
+## Segmentation model
+
+The final segmentation baseline uses pretrained **YOLO11n-seg**.
+
+Training configuration:
+
+```text
+imgsz:         640
+batch:         16
+epochs:        50
+seed:          42
+deterministic: true
+GPU:           Tesla T4
+```
+
+### Final v3 test results
+
+39 test images, 57 total instances:
+
+| Class             | Mask Precision | Mask Recall | mAP50 | mAP50-95 |
+| ----------------- | -------------: | ----------: | ----: | -------: |
+| fire_extinguisher |          0.944 |       0.750 | 0.821 |    0.573 |
+| obstacle          |          0.000 |       0.000 | 0.000 |    0.000 |
+
+The extinguisher class generalizes reasonably well, while direct prediction of a semantic `obstacle` class does not.
+
+This supports a central methodological conclusion:
+
+> **Obstacle is primarily a spatial/functional relation, not a stable visual category.**
+
+---
+
+## Visual occlusion q
+
+For synthetic images with a known full extinguisher mask:
+
+```text
+q = |M_full ∩ M_obstacle| / |M_full|
+```
+
+Component analysis:
+
+| Fire mask       | Obstacle mask          |        MAE |       RMSE | Correlation |
+| --------------- | ---------------------- | ---------: | ---------: | ----------: |
+| GT              | custom YOLO prediction |     0.0741 |     0.1515 |      0.3946 |
+| YOLO prediction | GT                     | **0.0124** | **0.0341** |  **0.9749** |
+| YOLO prediction | custom YOLO prediction |     0.0858 |     0.1616 |      0.3199 |
+
+The fire mask is accurate enough for the q metric when obstacle ground truth is available. Obstacle perception remains the main bottleneck.
+
+---
+
+## Access obstruction r
+
+`r` is computed from two functional access regions:
+
+- **Z1** — manipulation zone around the extinguisher;
+- **Z2** — directional approach corridor from the extinguisher toward the bottom-center of the image.
+
+```text
+r1 = |M_obstacle ∩ Z1| / |Z1|
+r2 = |M_obstacle ∩ Z2| / |Z2|
+
+r = 0.7 r1 + 0.3 r2
+```
+
+If Z2 is not sufficiently visible:
+
+```text
+r = r1
+```
+
+Final Z2 parameters:
+
+```text
+anchor:          (w/2, h-1)
+max length:      1.50 * fire_height
+width:           max(1.70 * fire_width, 0.45 * fire_height)
+minimum length:  0.30 * fire_height
+validity:        visibility >= 0.50
+```
+
+### Oracle r evaluation
+
+Using GT fire and GT obstacle masks:
+
+| Scenario | Mean r | Median r |
+| -------- | -----: | -------: |
+| S0       |  0.000 |    0.000 |
+| S1       |  0.000 |    0.000 |
+| S2       |  0.280 |    0.234 |
+| S3       |  0.379 |    0.402 |
+
+This validates the spatial formulation of r independently of perception errors.
+
+---
+
+## Automatic obstacle baselines
+
+Several alternatives were tested:
+
+- direct custom YOLO obstacle class;
+- FastSAM generic segmentation;
+- pretrained COCO YOLO segmentation;
+- YOLOE open-vocabulary segmentation.
+
+YOLOE was the strongest automatic r baseline on the full 28-image v3 set:
+
+```text
+MAE:         0.0742
+RMSE:        0.1483
+Correlation: 0.5604
+```
+
+However, after confidence tuning on train+validation, held-out diagnostic performance degraded:
+
+```text
+MAE:          0.1734
+RMSE:         0.2414
+Correlation: -0.0954
+```
+
+Therefore obstacle perception is treated as a current limitation rather than used as the final source of q/r.
+
+---
+
+## Accessibility ground truth
+
+Accessibility was manually annotated independently of q and r:
+
+```text
+0 = accessible
+1 = partially_blocked
+2 = severely_blocked
+```
+
+Distribution:
+
+```text
+class 0: 20
+class 1: 30
+class 2: 11
+total:   61
+```
+
+---
+
+## M1 / M2 / M3 evaluation
+
+All models use the same balanced Logistic Regression classifier.
+
+Evaluation uses **5-fold StratifiedGroupKFold**, grouped by source image.
+
+| Model | Features |   Accuracy | Balanced Accuracy |   Macro-F1 |
+| ----- | -------- | ---------: | ----------------: | ---------: |
+| M1    | q        |     0.4262 |            0.5066 |     0.4185 |
+| M2    | r        |     0.6230 |            0.6591 |     0.6165 |
+| M3    | q + r    | **0.6557** |        **0.6621** | **0.6439** |
+
+### Repeated grouped cross-validation
+
+50 repetitions of 5-fold StratifiedGroupKFold:
+
+| Model  | Accuracy mean ± std | Macro-F1 mean ± std |
+| ------ | ------------------: | ------------------: |
+| M1 q   |     0.4193 ± 0.0215 |     0.4177 ± 0.0150 |
+| M2 r   |     0.6338 ± 0.0211 |     0.6255 ± 0.0204 |
+| M3 q+r | **0.6656 ± 0.0141** | **0.6518 ± 0.0133** |
+
+M3 outperformed M2 in approximately **80%** of repetitions for Accuracy and Macro-F1.
+
+The improvement is modest and uncertainty ranges still include zero, so the hypothesis is interpreted as **partially supported**, not statistically conclusive.
+
+---
+
+## Repository structure
 
 ```text
 .
-├── annotations/        # tracked CVAT / YOLO segmentation annotations
-├── assets/             # small obstacle/reference assets
-├── configs/            # YOLO dataset YAML files
-├── docs/               # project status and repository/methodology audit
-├── metadata/           # tracked split manifests
-├── results/            # lightweight annotation checks / visual outputs
-├── scripts/            # dataset preparation and validation utilities
-├── src/                # reusable accessibility-analysis code (future)
+├── annotations/          # tracked CVAT / YOLO annotations
+├── configs/              # dataset configuration files
+├── docs/                 # methodology / project documentation
+├── metadata/             # source and split manifests
+├── results/
+│   ├── final/            # final q/r/accessibility experiment results
+│   ├── baselines/        # perception baseline results
+│   └── diagnostics/      # audits and diagnostic tables
+├── scripts/              # dataset, q/r, evaluation and visualization scripts
 ├── dataset_guideline.md
 ├── requirements.txt
 └── README.md
 ```
 
-Large image datasets, generated augmented datasets, model weights, and training runs are intentionally excluded from Git.
+Large datasets, model weights, generated outputs, training runs and local environments are intentionally excluded from Git.
 
-## Reproducible dataset pipeline
+---
 
-```text
-base dataset + annotations
-        ↓
-synthetic annotations
-        ↓
-additional real images + fixed split manifest
-        ↓
-build_source_dataset.py
-        ↓
-validate_yolo_dataset.py
-        ↓
-augment_train_dataset.py
-        ↓
-validate_yolo_dataset.py
-        ↓
-model training
-```
+## Main reproducibility scripts
 
-Recommended commands:
-
-```bash
-python scripts/build_source_dataset.py
-python scripts/validate_yolo_dataset.py data/fire_accessibility_source
-python scripts/augment_train_dataset.py
-python scripts/validate_yolo_dataset.py data/fire_accessibility_augmented
-```
-
-The additional real-image split is stored in:
+### Dataset
 
 ```text
-metadata/additional_real_split.csv
+scripts/build_source_dataset.py
+scripts/augment_train_dataset.py
+scripts/validate_yolo_dataset.py
 ```
 
-## Important pre-training blocker
+### q
 
-Training is intentionally paused while one annotation decision is resolved: the `fire_extinguisher` target must use a consistent **modal (visible-only)** or **amodal/full** mask definition.
+```text
+scripts/compute_occlusion_q.py
+scripts/compute_occlusion_q_instances.py
+scripts/evaluate_q_synthetic.py
+scripts/evaluate_q_components.py
+```
 
-Synthetic composites may currently inherit a full extinguisher mask from the unobstructed base image, while real-image annotations are naturally visible-only. These semantics should not be mixed in a final training dataset.
+### r
 
-See:
+```text
+scripts/compute_access_obstruction.py
+scripts/evaluate_r_gt.py
+scripts/evaluate_r_coco.py
+scripts/evaluate_r_yoloe.py
+scripts/evaluate_r_yoloe_test.py
+```
 
-- [`docs/repository_audit.md`](docs/repository_audit.md)
-- [`docs/project_status.md`](docs/project_status.md)
-- [`dataset_guideline.md`](dataset_guideline.md)
+### Final experiment
 
-## Evaluation caveat
+```text
+scripts/evaluate_r_synthetic_gt.py
+scripts/prepare_accessibility_gt.py
+scripts/evaluate_m1_m2_m3.py
+scripts/bootstrap_m2_m3.py
+scripts/repeated_cv_m1_m2_m3.py
+scripts/error_analysis_m2_m3.py
+```
 
-Validation and test currently contain only two obstacle-positive images each. This is sufficient for pipeline verification but should be expanded before final scientific comparisons or publication claims.
+---
 
-## Script documentation
+## Main conclusion
 
-See [`scripts/README.md`](scripts/README.md) for the active pipeline, repair utilities, and legacy experimental scripts.
+The experiments indicate that:
+
+1. **q alone is insufficient** for accessibility assessment.
+2. **r is the strongest individual signal**.
+3. Combining **q + r** produces a modest but relatively consistent improvement over r alone.
+4. The main unresolved technical bottleneck is robust automatic perception of functionally relevant obstacles from a single RGB image.

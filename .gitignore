@@ -21,3 +21,18 @@ venv/
 .vscode/
 .idea/
 .venv_s4/
+
+# Generated experiment outputs
+outputs/
+obstacle_compare/
+test_v3_predictions/
+
+# Local model / embedding downloads
+/mobileclip_blt.ts
+/.mobileclip_blt.ts.*.part
+
+# Local archives
+*.zip
+
+# Temporary experiment artifacts
+accessibility_gt_images.zip

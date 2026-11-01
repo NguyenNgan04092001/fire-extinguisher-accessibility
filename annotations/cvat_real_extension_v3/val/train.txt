@@ -1,0 +1,6 @@
+data/images/train/v3_0005.jpg
+data/images/train/v3_0010.jpg
+data/images/train/v3_0011.png
+data/images/train/v3_0018.png
+data/images/train/v3_0022.png
+data/images/train/v3_0027.png
