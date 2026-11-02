@@ -6,7 +6,7 @@ import csv
 import cv2
 import numpy as np
 
-from compute_access_obstruction import create_access_zones
+from scripts.r.compute_access_obstruction import create_access_zones
 
 
 META = Path("metadata/real_extension_v3.csv")

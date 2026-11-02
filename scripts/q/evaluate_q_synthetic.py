@@ -6,7 +6,7 @@ import re
 
 import numpy as np
 
-from compute_occlusion_q_instances import (
+from scripts.q.compute_occlusion_q_instances import (
     read_image,
     parse_yolo_seg,
     polygon_mask,

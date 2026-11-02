@@ -232,10 +232,10 @@ Val/test không augmentation.
 Luôn chạy:
 
 ```bash
-python scripts/build_source_dataset.py
-python scripts/validate_yolo_dataset.py data/fire_accessibility_source
-python scripts/augment_train_dataset.py
-python scripts/validate_yolo_dataset.py data/fire_accessibility_augmented
+python -m scripts.data_prep.build_source_dataset
+python -m scripts.data_prep.validate_yolo_dataset data/fire_accessibility_source
+python -m scripts.data_prep.augment_train_dataset
+python -m scripts.data_prep.validate_yolo_dataset data/fire_accessibility_augmented
 ```
 
 Expected counts với dataset hiện tại:

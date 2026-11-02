@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 from ultralytics import YOLOE
 
-from compute_access_obstruction import create_access_zones
-from evaluate_r_gt import load_gt_mask
+from scripts.r.compute_access_obstruction import create_access_zones
+from scripts.r.evaluate_r_gt import load_gt_mask
 
 
 META = Path("metadata/real_extension_v3.csv")
@@ -264,9 +264,11 @@ def main():
         encoding="utf-8",
         newline="",
     ) as f:
-        rows = list(
-            csv.DictReader(f)
-        )
+        rows = [
+            row
+            for row in csv.DictReader(f)
+            if row["split"] == "test"
+        ]
 
     output_rows = []
 
@@ -400,7 +402,7 @@ def main():
         )
 
         print(
-            f"[{idx:02d}/28] "
+            f"[{idx:02d}/{len(rows)}] "
             f"{name} {scenario} "
             f"YOLOE={r_yoloe:.3f} "
             f"GT={r_gt:.3f} "

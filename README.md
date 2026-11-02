@@ -308,37 +308,37 @@ Large datasets, model weights, generated outputs, training runs and local enviro
 ### Dataset
 
 ```text
-scripts/build_source_dataset.py
-scripts/augment_train_dataset.py
+scripts/data_prep/build_source_dataset.py
+scripts/data_prep/augment_train_dataset.py
 scripts/validate_yolo_dataset.py
 ```
 
 ### q
 
 ```text
-scripts/compute_occlusion_q.py
-scripts/compute_occlusion_q_instances.py
-scripts/evaluate_q_synthetic.py
-scripts/evaluate_q_components.py
+scripts/q/compute_occlusion_q.py
+scripts/q/compute_occlusion_q_instances.py
+scripts/q/evaluate_q_synthetic.py
+scripts/q/evaluate_q_components.py
 ```
 
 ### r
 
 ```text
-scripts/compute_access_obstruction.py
-scripts/evaluate_r_gt.py
-scripts/evaluate_r_coco.py
-scripts/evaluate_r_yoloe.py
-scripts/evaluate_r_yoloe_test.py
+scripts/r/compute_access_obstruction.py
+scripts/r/evaluate_r_gt.py
+scripts/r/evaluate_r_coco.py
+scripts/r/evaluate_r_yoloe.py
+scripts/r/evaluate_r_yoloe_test.py
 ```
 
 ### Final experiment
 
 ```text
-scripts/evaluate_r_synthetic_gt.py
-scripts/prepare_accessibility_gt.py
-scripts/evaluate_m1_m2_m3.py
-scripts/bootstrap_m2_m3.py
+scripts/r/evaluate_r_synthetic_gt.py
+scripts/accessibility/prepare_accessibility_gt.py
+scripts/accessibility/evaluate_m1_m2_m3.py
+scripts/accessibility/bootstrap_m2_m3.py
 scripts/repeated_cv_m1_m2_m3.py
 scripts/error_analysis_m2_m3.py
 ```

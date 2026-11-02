@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 
-from compute_access_obstruction import create_access_zones
-from evaluate_r_gt import load_gt_mask
+from scripts.r.compute_access_obstruction import create_access_zones
+from scripts.r.evaluate_r_gt import load_gt_mask
 
 
 META = Path("metadata/real_extension_v3.csv")

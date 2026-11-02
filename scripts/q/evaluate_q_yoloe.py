@@ -7,14 +7,14 @@ import cv2
 import numpy as np
 from ultralytics import YOLO, YOLOE
 
-from compute_occlusion_q_instances import (
+from scripts.q.compute_occlusion_q_instances import (
     read_image,
     parse_yolo_seg,
     polygon_mask,
     infer_base_stem,
 )
 
-from evaluate_r_yoloe import (
+from scripts.r.evaluate_r_yoloe import (
     MODEL_NAME,
     PROMPTS,
 )

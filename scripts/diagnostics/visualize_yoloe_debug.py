@@ -4,9 +4,9 @@ import cv2
 import numpy as np
 from ultralytics import YOLOE
 
-from compute_access_obstruction import create_access_zones
-from evaluate_r_gt import load_gt_mask
-from evaluate_r_yoloe import (
+from scripts.r.compute_access_obstruction import create_access_zones
+from scripts.r.evaluate_r_gt import load_gt_mask
+from scripts.r.evaluate_r_yoloe import (
     MODEL_NAME,
     PROMPTS,
     get_yoloe_obstacle_mask,

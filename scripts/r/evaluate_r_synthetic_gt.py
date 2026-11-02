@@ -6,14 +6,14 @@ import re
 
 import numpy as np
 
-from compute_occlusion_q_instances import (
+from scripts.q.compute_occlusion_q_instances import (
     read_image,
     parse_yolo_seg,
     polygon_mask,
     infer_base_stem,
 )
 
-from compute_access_obstruction import (
+from scripts.r.compute_access_obstruction import (
     create_access_zones,
 )
 

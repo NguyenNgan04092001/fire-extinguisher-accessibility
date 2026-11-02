@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from ultralytics import YOLO, FastSAM
 
-from compute_access_obstruction import (
+from scripts.r.compute_access_obstruction import (
     predict_fire_mask,
     create_access_zones,
     compute_obstruction_mask,
